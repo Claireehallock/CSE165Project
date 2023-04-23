@@ -1,9 +1,9 @@
-QT       += core gui
+QT       += core gui opengl
+LIBS+= -lopengl32 -lglu32
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
-QT += core gui opengl
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -15,8 +15,6 @@ SOURCES += \
 
 HEADERS += \
     mainwindow.h
-
-LIBS+= opengl32.lib
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
