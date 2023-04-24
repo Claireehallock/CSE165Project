@@ -3,7 +3,10 @@
 #define MAINWINDOW_H
 
 #include <QOpenGLWindow>
-
+#include <QSurfaceFormat>
+#include <QOpenGLFunctions>
+#include <QtOpenGL>
+#include <GL/GLU.h>
 
 
 class MainWindow : public QOpenGLWindow
@@ -20,6 +23,11 @@ protected:
     virtual void paintGL();
     void paintEvent(QPaintEvent *event);
     void resizeEvent(QResizeEvent *event);
+
+private:
+    QOpenGLContext *context;
+    QOpenGLFunctions *openGLFunctions;
+
 };
 
 #endif // MAINWINDOW_H
