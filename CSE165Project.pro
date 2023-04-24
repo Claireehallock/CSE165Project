@@ -14,6 +14,7 @@ SOURCES += \
     mainwindow.cpp
 
 HEADERS += \
+    Objects.h \
     mainwindow.h
 
 # Default rules for deployment.

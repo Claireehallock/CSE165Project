@@ -24,6 +24,9 @@ protected:
     void paintEvent(QPaintEvent *event);
     void resizeEvent(QResizeEvent *event);
 
+public slots:
+    void UpdateAnimation();
+
 private:
     QOpenGLContext *context;
     QOpenGLFunctions *openGLFunctions;

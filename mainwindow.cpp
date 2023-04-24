@@ -25,12 +25,19 @@ MainWindow::~MainWindow()
 
 void MainWindow::initializeGL()
 {
-
+    resizeGL(this->width(), this->height());
 }
 
 void MainWindow::resizeGL(int w, int h)
 {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
 
+    glViewport(0, 0, w, h);
+
+    qreal aspectratio = qreal(w)/qreal(h);
+
+    glOrtho(-1*aspectratio, 1*aspectratio, -1, 1, 1, -1);
 }
 
 void MainWindow::paintGL()
@@ -56,7 +63,13 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
+    resizeGL(this->width(), this->height());
+    this->update();
+}
 
+void MainWindow::UpdateAnimation()
+{
+    this->update();
 }
 
 
