@@ -28,12 +28,27 @@ public:
     float getDepth(){
         return depth;
     }
+
+    void setDepth(float d){
+        depth = d;
+    }
+
+    virtual bool Clickable(){
+        return false;
+    }
 };
 
 class ClickableObject : public DrawableObject{//Abstract class for all objects that can be interacted with
+protected:
+    bool pressed;
 public:
     virtual void press() = 0;
     virtual void release() = 0;
+    virtual bool inside(double x, double y) = 0;
+
+    virtual bool Clickable(){
+        return true;
+    }
 };
 
 class Background : public DrawableObject{
@@ -72,7 +87,7 @@ public:
 
         //Bookshelf shelves
         glColor3f(0.53f, 0.33f, 0.027f);
-        glBegin(GL_QUADS);
+        glBegin(GL_QUADS);//Highest Shelf
             glVertex3f(-0.85, 0.75, depth);
             glVertex3f(-0.25, 0.75, depth);
             glVertex3f(-0.25, 0.5, depth);
@@ -96,7 +111,7 @@ public:
             glVertex3f(-0.25, -0.4, depth);
             glVertex3f(-0.85, -0.4, depth);
         glEnd();
-        glBegin(GL_QUADS);
+        glBegin(GL_QUADS);//Lowest Shelf
             glVertex3f(-0.85, -0.45, depth);
             glVertex3f(-0.25, -0.45, depth);
             glVertex3f(-0.25, -0.7, depth);
@@ -131,8 +146,8 @@ public:
         glColor3f(0.2f, 0.2f, 0.2f);
         glBegin(GL_QUADS);//Base
             glVertex3f(0.1, -0.2, depth);
-            glVertex3f(0.1, -0.125, depth);
-            glVertex3f(0.7, -0.125, depth);
+            glVertex3f(0.15, -0.125, depth);
+            glVertex3f(0.65, -0.125, depth);
             glVertex3f(0.7, -0.2, depth);
         glEnd();
         glBegin(GL_QUADS);//Connection
@@ -154,6 +169,68 @@ public:
             glVertex3f(0.75, 0.35, depth);
             glVertex3f(0.75, -0.025, depth);
         glEnd();
+    }
+};
+
+class Book : public ClickableObject{
+protected:
+    float x;
+    float y;
+    float height;
+    float r;
+    float g;
+    float b;
+
+public:
+    Book(){
+        x = 0;
+        y = 0;
+        height = 0;
+        r = 0;
+        g = 0;
+        b = 0;
+        pressed = false;
+    }
+
+    Book(float x1, float y1, float h1, float r1, float g1, float b1){
+        x = x1;
+        y = y1;
+        height = h1;
+        r = r1;
+        g = g1;
+        b = b1;
+        pressed = false;
+    }
+
+    ~Book(){
+        //
+    }
+
+    void paint(){
+        glColor3f(r, g, b);
+        glBegin(GL_QUADS);
+            glVertex3f(x, y, depth);
+            glVertex3f(x+0.05, y, depth);
+            glVertex3f(x+0.05, y+height, depth);
+            glVertex3f(x, y+height, depth);
+        glEnd();
+    }
+
+    void press(){
+        pressed =true;
+        height -=0.05;
+    }
+
+    void release(){
+        pressed = false;
+        height +=0.05;
+    }
+
+    bool inside(double x1, double y1){
+        if((x1 >= x) && (x1<=x+0.05) && (y1>=y) && (y1<=y+height)){
+            return true;
+        }
+        return false;
     }
 };
 
