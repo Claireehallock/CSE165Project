@@ -8,6 +8,7 @@
 #include <QtOpenGL>
 #include <GL/GLU.h>
 #include <climits>
+#include <iostream>
 
 class DrawableObject : public QObject{//Abstract class for all visible objects
 protected:
@@ -36,15 +37,39 @@ public:
     virtual bool Clickable(){
         return false;
     }
+
+    virtual void show(){
+        shown = true;
+    }
+
+    virtual void hide(){
+        shown = false;
+    }
+
+    virtual void toggleShow(){
+        std::cout << "hi\n";
+        if (shown){
+            shown = false;
+        }
+        else{
+            shown = true;
+        }
+    }
 };
 
 class ClickableObject : public DrawableObject{//Abstract class for all objects that can be interacted with
 protected:
     bool pressed;
 public:
-    virtual void press() = 0;
-    virtual void release() = 0;
-    virtual bool inside(double x, double y) = 0;
+    virtual int press(){
+        pressed = true;
+        return 0;
+    }; //Returns the an int representing if something needs to happen
+    virtual void release(){
+        pressed = false;
+    };
+
+    virtual bool inside(float x, float y) = 0;
 
     virtual bool Clickable(){
         return true;
@@ -181,7 +206,11 @@ protected:
     float g;
     float b;
 
+    int selected;
+
 public:
+    static int numSelected;
+
     Book(){
         x = 0;
         y = 0;
@@ -190,6 +219,7 @@ public:
         g = 0;
         b = 0;
         pressed = false;
+        selected = 0;
     }
 
     Book(float x1, float y1, float h1, float r1, float g1, float b1){
@@ -200,6 +230,7 @@ public:
         g = g1;
         b = b1;
         pressed = false;
+        selected = 0;
     }
 
     ~Book(){
@@ -214,23 +245,221 @@ public:
             glVertex3f(x+0.05, y+height, depth);
             glVertex3f(x, y+height, depth);
         glEnd();
+
+        if(selected>0){
+            glColor3f(1, 1, 1);//Add page visibility
+            glBegin(GL_QUADS);
+                glVertex3f(x+0.01, y+height*4/5, depth);
+                glVertex3f(x+0.04, y+height*4/5, depth);
+                glVertex3f(x+0.04, y+height, depth);
+                glVertex3f(x+0.01, y+height, depth);
+            glEnd();
+            glColor3f(0, 0, 0);//seam
+            glBegin(GL_LINES);
+                glVertex3f(x+0.00, y+height*7/10, depth);
+                glVertex3f(x+0.05, y+height*7/10, depth);
+            glEnd();
+
+            glBegin(GL_LINES);//Page Lines
+                glVertex3f(x+0.015, y+height, depth);
+                glVertex3f(x+0.015, y+height*4/5, depth);
+            glEnd();
+
+            glBegin(GL_LINES);
+                glVertex3f(x+0.02, y+height, depth);
+                glVertex3f(x+0.02, y+height*4/5, depth);
+            glEnd();
+
+            glBegin(GL_LINES);
+                glVertex3f(x+0.025, y+height, depth);
+                glVertex3f(x+0.025, y+height*4/5, depth);
+            glEnd();
+
+            glBegin(GL_LINES);
+                glVertex3f(x+0.03, y+height, depth);
+                glVertex3f(x+0.03, y+height*4/5, depth);
+            glEnd();
+
+            glBegin(GL_LINES);
+                glVertex3f(x+0.035, y+height, depth);
+                glVertex3f(x+0.035, y+height*4/5, depth);
+            glEnd();
+        }
     }
 
-    void press(){
+    int press(){
+        if(selected == 0){
+            if(numSelected >= 0){
+                numSelected++;
+                selected = numSelected;
+            }
+        }
         pressed =true;
-        height -=0.05;
+        if(numSelected >= 6){
+            numSelected = 0;
+            return 1;
+        }
+        return 0;
     }
 
     void release(){
         pressed = false;
-        height +=0.05;
     }
 
-    bool inside(double x1, double y1){
+    bool inside(float x1, float y1){
         if((x1 >= x) && (x1<=x+0.05) && (y1>=y) && (y1<=y+height)){
             return true;
         }
         return false;
+    }
+
+    void setColor(){
+        r = 0;
+        b = 0;
+        g = 0;
+    }
+
+    int getSelected(){
+        return selected;
+    }
+
+    void setSelected(int num){
+        selected = num;
+    }
+};
+
+class Button : public ClickableObject{
+    float x;
+    float y;
+    float width;
+    float height;
+    int id;
+
+public:
+    static int numButtons;
+
+    Button(){
+        x=0;
+        y=0;
+        width=0;
+        height=0;
+        pressed=FALSE;
+        numButtons++;
+        id = numButtons;
+    }
+
+    Button(float x1, float y1, float w, float h){
+        x=x1;
+        y=y1;
+        width=w;
+        height=h;
+        pressed=FALSE;
+        numButtons++;
+        id = numButtons;
+    }
+
+    ~Button(){}
+
+    void paint(){
+
+        if(!pressed){
+            glColor3f(0, 0, 0);
+            glBegin(GL_QUADS);//Full button
+            glVertex3f(x, y, depth);
+            glVertex3f(x+width, y, depth);
+            glVertex3f(x+width, y+height, depth);
+            glVertex3f(x, y+height, depth);
+            glEnd();
+        }
+        else{
+            glColor3f(0, 0, 0);
+            glBegin(GL_QUADS);//Half button
+            glVertex3f(x, y, depth);
+            glVertex3f(x, y+height/2, depth);
+            glVertex3f(x+width, y+height/2, depth);
+            glVertex3f(x+width, y, depth);
+            glEnd();
+        }
+
+    }
+
+    int press(){
+        pressed = true;
+        return 100+id;
+    }
+
+    bool inside(float x1, float y1){
+        if((x1 >= x) && (x1<=x+width) && (y1>=y) && (y1<=y+height)){
+            return true;
+        }
+        return false;
+    }
+};
+
+class Screen : public DrawableObject{
+public:
+    Screen(){
+        shown = false;
+    };
+
+    ~Screen(){};
+
+    void paint(){
+        if(shown){
+            float i = 0.1;
+            glColor3f(0, 0.8, 0);
+            glBegin(GL_QUADS);//Green
+            glVertex3f(i, -0.025, depth);
+            glVertex3f(i, 0.35, depth);
+            glVertex3f(i+0.1, 0.35, depth);
+            glVertex3f(i+0.1, -0.025, depth);
+            glEnd();
+
+            i+=0.1;
+            glColor3f(1, 0, 0);
+            glBegin(GL_QUADS);//Red
+            glVertex3f(i, -0.025, depth);
+            glVertex3f(i, 0.35, depth);
+            glVertex3f(i+0.1, 0.35, depth);
+            glVertex3f(i+0.1, -0.025, depth);
+            glEnd();
+
+            i+=0.1;
+            glColor3f(0, 0, 1);
+            glBegin(GL_QUADS);//Blue
+            glVertex3f(i, -0.025, depth);
+            glVertex3f(i, 0.35, depth);
+            glVertex3f(i+0.1, 0.35, depth);
+            glVertex3f(i+0.1, -0.025, depth);
+            glEnd();
+
+            i+=0.1;
+            glColor3f(0.7, 0, 1);
+            glBegin(GL_QUADS);//Purple
+            glVertex3f(i, -0.025, depth);
+            glVertex3f(i, 0.35, depth);
+            glVertex3f(i+0.1, 0.35, depth);
+            glVertex3f(i+0.1, -0.025, depth);
+            glEnd();
+
+            i+=0.1;
+            glColor3f(1, 1, 1);
+            glBegin(GL_QUADS);//White
+            glVertex3f(i, -0.025, depth);
+            glVertex3f(i, 0.35, depth);
+            glVertex3f(i+0.1, 0.35, depth);
+            glVertex3f(i+0.1, -0.025, depth);
+            glEnd();
+
+            i+=0.1;
+            glColor3f(1, 1, 0);
+            glBegin(GL_QUADS);//Yellow
+            glVertex3f(i, -0.025, depth);
+            glVertex3f(i, 0.35, depth);
+            glVertex3f(i+0.1, 0.35, depth);
+            glVertex3f(i+0.1, -0.025, depth);
+            glEnd();
+        }
     }
 };
 

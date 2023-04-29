@@ -23,7 +23,6 @@ public:
     void addObject(DrawableObject* o){
         o->setDepth((float)d.size()/100+0.01);
         d.push_back(o);
-        std::cout <<"depth: "<< o->getDepth()<<std::endl;
         if(o->Clickable()){
             c.push_back(dynamic_cast<ClickableObject*>(o));
         }
@@ -62,6 +61,9 @@ private:
     int hExtraPixels = 0;
 
     bool mousePressed;
+
+    enum command{Nothing=0, Books=1, Temp=2};
+    command executeCommand;
 
 };
 

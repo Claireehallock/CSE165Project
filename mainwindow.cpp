@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     openGLFunctions = context->functions();
 
+    executeCommand = Nothing;
+
     timer = new QTimer(this);
 
     connect(timer, SIGNAL(timeout()), this, SLOT(UpdateAnimation()));
@@ -28,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+//    delete timer;
+//    delete context;
 }
 
 void MainWindow::click(float x, float y)
@@ -36,8 +40,7 @@ void MainWindow::click(float x, float y)
     bool check = false;
     while(!check && i < c.size()){
         if (c.at(i)->inside(x, y)){
-            c.at(i)->press();
-            std::cout <<"depth: "<< c.at(i)->getDepth()<<std::endl;
+            executeCommand = command(c.at(i)->press());
             selected = c.at(i);
             UpdateAnimation();
             check = true;
@@ -111,10 +114,8 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
         mousePressed = true;
-        std::cout << "x: " << event->pos().x() << " y: " << event->pos().y() << std::endl;
-//        dynamic_cast<ClickableObject*> (d.at(1))->press();
         float x = ((float)event->pos().x()-wExtraPixels/2)/windowSize*2-1;
-        float y = (0-(float)event->pos().y()-wExtraPixels/2)/windowSize*2+1;
+        float y = (0-(float)event->pos().y()-hExtraPixels/2)/windowSize*2+1;
         click(x, y);
     }
 }
@@ -123,14 +124,44 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
         mousePressed = false;
-        std::cout << "Released\n";
         unclick();
-//        dynamic_cast<ClickableObject*> (d.at(1))->release();
     }
 }
 
-void MainWindow::UpdateAnimation()
+
+//Note:
+//c[0]->c[5] are books
+void MainWindow::UpdateAnimation()//Used to check for any updates
 {
+    if(executeCommand != Nothing){
+        switch((int)executeCommand){
+        case 1://Books
+            //Checks for correct order of selected books
+            if(dynamic_cast<Book*>(c[0])->getSelected() == 3 &&
+               dynamic_cast<Book*>(c[1])->getSelected() == 2 &&
+               dynamic_cast<Book*>(c[2])->getSelected() == 6 &&
+               dynamic_cast<Book*>(c[3])->getSelected() == 5 &&
+               dynamic_cast<Book*>(c[4])->getSelected() == 1 &&
+               dynamic_cast<Book*>(c[5])->getSelected() == 4)
+            {
+                //What to do if correct order selected
+                dynamic_cast<Book*>(c[0])->numSelected = -1;
+            }
+            else{
+                //
+            }
+            for(int i = 0; i < 6; i++){
+                dynamic_cast<Book*>(c[i])->setSelected(0);
+            }
+            break;
+        case 2:
+            break;
+        case 101: //button 1 (TV Button)
+            d[8]->toggleShow();
+            break;
+        }
+        executeCommand = Nothing;
+    }
     this->update();
 }
 
