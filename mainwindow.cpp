@@ -60,7 +60,7 @@ void MainWindow::click(float x, float y)
                     dynamic_cast<Mouse*>(d[9])->selectCheese();
                 }
                 if(dynamic_cast<MovableObject*>(selected)->isKey()){
-                    dynamic_cast<KeyBox*>(d[12])->selectKey();
+                    dynamic_cast<KeyBox*>(d[11])->selectKey();
                 }
             }
             UpdateAnimation();
@@ -78,7 +78,7 @@ void MainWindow::unclick()
                 dynamic_cast<Mouse*>(d[9])->unselectCheese();
             }
             if(dynamic_cast<MovableObject*>(selected)->isKey()){
-                dynamic_cast<KeyBox*>(d[12])->unselectKey();
+                dynamic_cast<KeyBox*>(d[11])->unselectKey();
             }
         }
         selected->release();
@@ -176,7 +176,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 }
 
 void MainWindow::giveKey(){
-    c[9]->show();
+    c[10]->show();
 }
 
 
@@ -205,6 +205,7 @@ void MainWindow::UpdateAnimation()//Used to check for any updates
                 dynamic_cast<Book*>(c[i])->setSelected(0);
             }
             dynamic_cast<BookBox*>(d[13])->open();
+            d[15]->show();
             break;
 
         case 2://Mouse Cheese
@@ -212,7 +213,8 @@ void MainWindow::UpdateAnimation()//Used to check for any updates
         break;
 
         case 3://Key Box
-            c[9]->hide();
+            c[10]->hide();
+            d[14]->show();
         break;
 
         case 101: //button 1 (TV Button)

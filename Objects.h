@@ -951,6 +951,25 @@ public:
         return 0;
     }
 
+    void paint(){
+        LockedBox::paint();
+        if(!opened){
+            glColor3f(0.1, 0.1, 0.1);
+            glBegin(GL_QUADS);//Key Hole
+                glVertex3f(x+w*.83, y+h*.33, depth);
+                glVertex3f(x+w*.83, y+h*.4, depth);
+                glVertex3f(x+w*.77, y+h*.4, depth);
+                glVertex3f(x+w*.77, y+h*.33, depth);
+            glEnd();
+                glBegin(GL_QUADS);//Key Hole
+                glVertex3f(x+w*.815, y+h*.33, depth);
+                glVertex3f(x+w*.815, y+h*.25, depth);
+                glVertex3f(x+w*.785, y+h*.25, depth);
+                glVertex3f(x+w*.785, y+h*.33, depth);
+                glEnd();
+        }
+    }
+
     void selectKey(){
         keySelected = true;
     }
@@ -977,6 +996,115 @@ public:
 
     int press(){
         return 0;
+    }
+};
+
+class Clock : public DrawableObject{
+    float x;
+    float y;
+    float radius;
+    float r;
+    float g;
+    float b;
+    int time;
+
+public:
+    Clock(float x1, float y1, float radi1, int time1, float r1, float g1, float b1){
+        x = x1;
+        y = y1;
+        radius = radi1;
+        time1 %= 12;
+        time = time1;
+        r = r1;
+        g = g1;
+        b = b1;
+    }
+
+    void paint(){
+        if(shown){
+            glColor3f(r, g, b);//Colored Rim of Clock
+            glBegin(GL_QUADS);//Top Right park of body
+            glVertex3f(x, y, depth);
+            glVertex3f(x-radius/2, y+0.866*radius, depth);
+            glVertex3f(x+radius/2, y+0.866*radius, depth);
+            glVertex3f(x+radius, y, depth);
+            glEnd();
+            glBegin(GL_QUADS);//Bottom Right park of body
+            glVertex3f(x, y, depth);
+            glVertex3f(x+radius, y, depth);
+            glVertex3f(x+radius/2, y-0.866*radius, depth);
+            glVertex3f(x-radius/2, y-0.866*radius, depth);
+            glEnd();
+            glBegin(GL_QUADS);//Left park of body
+            glVertex3f(x, y, depth);
+            glVertex3f(x-radius/2, y-0.866*radius, depth);
+            glVertex3f(x-radius, y, depth);
+            glVertex3f(x-radius/2, y+0.866*radius, depth);
+            glEnd();
+
+            glColor3f(1, 1, 1); //White Face of Clock
+            glBegin(GL_QUADS);//Top Right park of body
+            glVertex3f(x, y, depth);
+            glVertex3f(x-radius/2*0.7, y+0.866*radius*0.7, depth);
+            glVertex3f(x+radius/2*0.7, y+0.866*radius*0.7, depth);
+            glVertex3f(x+radius*0.7, y, depth);
+            glEnd();
+            glBegin(GL_QUADS);//Bottom Right park of body
+            glVertex3f(x, y, depth);
+            glVertex3f(x+radius*0.7, y, depth);
+            glVertex3f(x+radius/2*0.7, y-0.866*radius*0.7, depth);
+            glVertex3f(x-radius/2*0.7, y-0.866*radius*0.7, depth);
+            glEnd();
+            glBegin(GL_QUADS);//Left park of body
+            glVertex3f(x, y, depth);
+            glVertex3f(x-radius/2*0.7, y-0.866*radius*0.7, depth);
+            glVertex3f(x-radius*0.7, y, depth);
+            glVertex3f(x-radius/2*0.7, y+0.866*radius*0.7, depth);
+            glEnd();
+
+            glColor3f(0, 0, 0); //Minute Hand
+            glBegin(GL_QUADS);
+            glVertex3f(x-0.005, y-0.005, depth);
+            glVertex3f(x+0.005, y-0.005, depth);
+            glVertex3f(x+0.005, y+0.866*radius*0.7, depth);
+            glVertex3f(x-0.005, y+0.866*radius*0.7, depth);
+            glEnd();
+
+            switch(time){
+            case 3:
+                glBegin(GL_QUADS);
+                glVertex3f(x, y-0.005, depth);
+                glVertex3f(x, y+0.005, depth);
+                glVertex3f(x+0.866*radius*0.5, y+0.005, depth);
+                glVertex3f(x+0.866*radius*0.5, y-0.005, depth);
+                glEnd();
+                break;
+            case 6:
+                glBegin(GL_QUADS);
+                glVertex3f(x-0.005, y, depth);
+                glVertex3f(x+0.005, y, depth);
+                glVertex3f(x+0.005, y-0.866*radius*0.5, depth);
+                glVertex3f(x-0.005, y-0.866*radius*0.5, depth);
+                glEnd();
+                break;
+            case 9:
+                glBegin(GL_QUADS);
+                glVertex3f(x, y-0.005, depth);
+                glVertex3f(x, y+0.005, depth);
+                glVertex3f(x-0.866*radius*0.5, y+0.005, depth);
+                glVertex3f(x-0.866*radius*0.5, y-0.005, depth);
+                glEnd();
+                break;
+            case 12:
+                glBegin(GL_QUADS);
+                glVertex3f(x-0.005, y, depth);
+                glVertex3f(x+0.005, y, depth);
+                glVertex3f(x+0.005, y+0.866*radius*0.5, depth);
+                glVertex3f(x-0.005, y+0.866*radius*0.5, depth);
+                glEnd();
+                break;
+            }
+        }
     }
 };
 

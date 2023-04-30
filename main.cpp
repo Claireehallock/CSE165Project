@@ -45,17 +45,27 @@ int main(int argc, char *argv[])
     Cheese* cheese = new Cheese(-0.55, 0, 0.1, 0.1);//cheese
     w.addObject(cheese);
 
-    //Add key (1 Clickable Object) d[11] c[9]
+    //Add KeyBox (1 Clickable Object) d[11] c[9]
+    KeyBox* box1 = new KeyBox(-0.7, 0.2, 0.35, 0.25);//keyBox
+    w.addObject(box1);
+
+    //Add key (1 Clickable Object) d[12] c[10]
     Key* key = new Key(-0.15, -0.65);//key
     w.addObject(key);
 
-    //Add KeyBox (1 Clickable Object) d[12] c[10]
-    KeyBox* box1 = new KeyBox(-0.7, 0.2, 0.35, 0.25);//key
-    w.addObject(box1);
-
     //Add BookBox (1 Clickable Object) d[13] c[11]
-    BookBox* box2 = new BookBox(-0.7, -0.4, 0.2, 0.2);//key
+    BookBox* box2 = new BookBox(-0.7, -0.4, 0.2, 0.2);//bookBox
     w.addObject(box2);
+
+    //Add Clocks (3 Drawable Object) d[14]
+    Clock* clock1 = new Clock(-0.525, 0.325, 0.1, 9, 1, 0, 0);//Red clock
+    clock1->hide();
+    w.addObject(clock1);
+    Clock* clock2 = new Clock(-0.6, -0.3, 0.07, 12, 0, 1, 0);//Green clock
+    clock2->hide();
+    w.addObject(clock2);
+    Clock* clock3 = new Clock(0.55, 0.7, 0.15, 3, 0, 0, 1);//Blue clock
+    w.addObject(clock3);
 
 
     w.setTitle("CSE165Project");
