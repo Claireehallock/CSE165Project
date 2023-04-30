@@ -10,10 +10,11 @@
 #include <climits>
 #include <iostream>
 
+//Abstract methods: void paint()
 class DrawableObject : public QObject{//Abstract class for all visible objects
 protected:
     float depth;
-    bool shown;
+    bool shown = true;
 public:
     virtual void paint() = 0;
 
@@ -38,6 +39,10 @@ public:
         return false;
     }
 
+    virtual bool Movable(){
+        return false;
+    }
+
     virtual void show(){
         shown = true;
     }
@@ -56,6 +61,7 @@ public:
     }
 };
 
+//Abstract methods: bool inside()
 class ClickableObject : public DrawableObject{//Abstract class for all objects that can be interacted with
 protected:
     bool pressed;
@@ -72,6 +78,46 @@ public:
 
     virtual bool Clickable(){
         return true;
+    }
+};
+
+class MovableObject : public ClickableObject{
+protected:
+    float x;
+    float y;
+
+    float xSet;//Default spot for object to return to
+    float ySet;
+
+    bool selected;
+
+public:
+    virtual int press(){
+        pressed = true;
+        return 0;
+    };
+
+    virtual void drop(){
+        selected = false;
+        x = xSet;
+        y = ySet;
+    }
+
+    virtual void setPosition(float x1, float y1){
+        x = x1;
+        y = y1;
+    }
+
+    virtual bool Movable(){
+        return true;
+    }
+
+    virtual bool isCheese(){
+        return false;
+    }
+
+    virtual bool isKey(){
+        return false;
     }
 };
 
@@ -140,6 +186,15 @@ public:
             glVertex3f(-0.25, -0.45, depth);
             glVertex3f(-0.25, -0.7, depth);
             glVertex3f(-0.85, -0.7, depth);
+        glEnd();
+
+        //Plate for cheese
+        glColor3f(1, 1, 1);
+        glBegin(GL_QUADS);
+            glVertex3f(-0.65, -0.1, depth);
+            glVertex3f(-0.45, -0.1, depth);
+            glVertex3f(-0.35, -0.05, depth);
+            glVertex3f(-0.75, -0.05, depth);
         glEnd();
 
         //Cabinet for TV
@@ -333,8 +388,10 @@ public:
     }
 
     bool inside(float x1, float y1){
-        if((x1 >= x) && (x1<=x+0.05) && (y1>=y) && (y1<=y+height)){
-            return true;
+        if (shown){
+            if((x1 >= x) && (x1<=x+0.05) && (y1>=y) && (y1<=y+height)){
+                return true;
+            }
         }
         return false;
     }
@@ -415,8 +472,10 @@ public:
     }
 
     bool inside(float x1, float y1){
-        if((x1 >= x) && (x1<=x+width) && (y1>=y) && (y1<=y+height)){
-            return true;
+        if(shown){
+            if((x1 >= x) && (x1<=x+width) && (y1>=y) && (y1<=y+height)){
+                return true;
+            }
         }
         return false;
     }
@@ -489,13 +548,16 @@ public:
     }
 };
 
-class Mouse : public ClickableObject{//I decided to hardcode the start and end location of the mouse sinceI only plan on using 1
+class Mouse : public ClickableObject{//I decided to hardcode the start and end location of the mouse since I only plan on using 1
+public:
     enum Pos{None=0, Left = 1, upLeft = 2};
+private:
     Pos pos;
 
     float x;
     float y;
 
+    bool cheeseSelected;
     bool stopped;
 
     int waitTime;
@@ -505,8 +567,9 @@ public:
         x = -0.2;
         y = -0.58;
         pos = upLeft;
+        cheeseSelected = false;
         stopped = false;
-        waitTime = 201;
+        waitTime = 101;
     }
 
     void paint(){
@@ -592,19 +655,33 @@ public:
         }
     }
 
-    void stop(){
-        stopped = true;
+    virtual int press(){
+        pressed = true;
+        if(cheeseSelected){
+            stopped = true;
+                return 2;
+        }
+        return 0;
+    }
+
+    void selectCheese(){
+        cheeseSelected = true;
+    }
+
+    void unselectCheese(){
+        cheeseSelected = false;
     }
 
     void move(){
         if(pos == upLeft){
-            y+=0.001;
+            y+=0.01;
         }
         if(pos == Left){
-            x-=0.001;
+            x-=0.01;
         }
         if(y >=0.8){
             pos = Left;
+            y-=0.01;
         }
         if(x <=-0.8){
             pos = None;
@@ -612,26 +689,276 @@ public:
             y = -0.5;
             waitTime = 0;
         }
-        if(waitTime < 200){
+        if(waitTime < 100){
             waitTime++;
         }
-        else if (waitTime == 200){
+        else if (waitTime == 100){
             pos = upLeft;
-            waitTime = 201;
+            waitTime = 101;
+            if(stopped){
+                pos = None;
+            }
         }
     }
 
     bool inside(float x1, float y1){
-        if(!stopped){
-            return false;
+        if(pos == Left){
+            if((x1>=x-.025)&&(x1<=x+0.13)&&(y1>=y)&&(y1<=y+0.065)){
+                return true;
+            }
         }
-        else{
-            //
+        if(pos == upLeft){
+            if((x1>=x)&&(x1<=x+0.065)&&(y1>=y-0.13)&&(y1<=y+0.025)){
+                return true;
+            }
+        }
+    return false;
+    }
+
+    Pos getPosition(){
+        return pos;
+    }
+
+    float getX(){
+        return x;
+    }
+
+    float getY(){
+        return y;
+    }
+
+    int getWaitTime(){
+        return waitTime;
+    }
+};
+
+class Cheese : public MovableObject{
+    float width;
+    float height;
+
+public:
+    Cheese(float x1, float y1, float w, float h){
+        xSet = x1;
+        x=x1;
+        ySet = y1;
+        y=y1;
+        width = w;
+        height = h;
+        shown = true;
+    }
+
+    ~Cheese(){}
+
+    void paint(){
+        if(shown){
+            glColor3f(1, 1, 0);
+            glBegin(GL_QUADS);//Main Cheese
+                glVertex3f(x-width/2, y-height/2, depth);
+                glVertex3f(x+width/2, y-height/2, depth);
+                glVertex3f(x+width/2, y+height/2, depth);
+                glVertex3f(x-width/2, y+height/2, depth);
+            glEnd();
+            glColor3f(1, 0.8, 0);
+            glBegin(GL_QUADS);//Holes
+                glVertex3f(x-width/4, y-height/4, depth);
+                glVertex3f(x-width/8, y-height/8, depth);
+                glVertex3f(x, y-height/4, depth);
+                glVertex3f(x-width/8, y-height*3/8, depth);
+            glEnd();
+            glBegin(GL_QUADS);
+                glVertex3f(x+width/4, y+height/4, depth);
+                glVertex3f(x+width/8, y+height/8, depth);
+                glVertex3f(x, y+height/4, depth);
+                glVertex3f(x+width/8, y+height*3/8, depth);
+            glEnd();
+        }
+    }
+
+    bool inside(float x1, float y1){
+        if(shown){
+            if((x1>=x-width/2)&&(x1<=x+width/2)&&(y1>=y-height/2)&&(y1<=y+height/2)){
+                return true;
+            }
         }
         return false;
     }
 
+    bool isCheese(){
+        return true;
+    }
 };
 
+class Key : public MovableObject{
+public:
+    Key(float x1, float y1){
+        xSet = x1;
+        ySet=y1;
+        x=x1;
+        y=y1;
+        shown = false;
+    }
+
+    void paint(){
+        if(shown){
+            glColor3f(1, 1, 0);
+            glBegin(GL_QUADS);//main Body
+                glVertex3f(x+0.005, y+0.015, depth);
+                glVertex3f(x+0.005, y-0.025, depth);
+                glVertex3f(x-0.005, y-0.025, depth);
+                glVertex3f(x-0.005, y+0.015, depth);
+            glEnd();
+            glBegin(GL_QUADS);//Left part of Loop
+                glVertex3f(x+0.005, y+0.015, depth);
+                glVertex3f(x-0.01, y+0.035, depth);
+                glVertex3f(x-0.02, y+0.035, depth);
+                glVertex3f(x-0.005, y+0.015, depth);
+            glEnd();
+            glBegin(GL_QUADS);//Right part of Loop
+                glVertex3f(x+0.005, y+0.015, depth);
+                glVertex3f(x+0.02, y+0.035, depth);
+                glVertex3f(x+0.01, y+0.035, depth);
+                glVertex3f(x-0.005, y+0.015, depth);
+            glEnd();
+            glBegin(GL_QUADS);//Top part of Loop
+                glVertex3f(x+0.02, y+0.035, depth);
+                glVertex3f(x-0.02, y+0.035, depth);
+                glVertex3f(x-0.02, y+0.045, depth);
+                glVertex3f(x+0.02, y+0.045, depth);
+            glEnd();
+            glBegin(GL_QUADS);//prong
+                glVertex3f(x+0.005, y-0.005, depth);
+                glVertex3f(x+0.005, y-0.025, depth);
+                glVertex3f(x+0.015, y-0.025, depth);
+                glVertex3f(x+0.015, y-0.005, depth);
+            glEnd();
+        }
+    }
+
+    bool inside(float x1, float y1){
+        if(shown){
+            if(x1>=x-0.02 && x1<=x+0.02 && y1>=y-0.025 && y1<=y+0.045){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool isKey(){
+        return true;
+    }
+};
+
+class LockedBox : public ClickableObject{
+protected:
+    float x;
+    float y;
+    float w;
+    float h;
+
+    bool opened;
+
+public:
+    LockedBox(){
+        x = 0;
+        y = 0;
+        w = 0;
+        h = 0;
+        opened = false;
+    }
+
+    LockedBox(float x1, float y1, float w1, float h1){
+        x = x1;
+        y = y1;
+        w = w1;
+        h = h1;
+        opened = false;
+    }
+
+    virtual void paint(){
+        glColor3f(0.6, 0.6, 0.6);
+        glBegin(GL_QUADS);//main Body
+            glVertex3f(x+w, y, depth);
+            glVertex3f(x+w, y+h, depth);
+            glVertex3f(x, y+h, depth);
+            glVertex3f(x, y, depth);
+        glEnd();
+        glColor3f(0.7, 0.7, 0.7);
+        if(!opened){
+            glBegin(GL_QUADS);//Door
+                glVertex3f(x+w*9/10, y+h/10, depth);
+                glVertex3f(x+w*9/10, y+h*9/10, depth);
+                glVertex3f(x+w/10, y+h*9/10, depth);
+                glVertex3f(x+w/10, y+h/10, depth);
+            glEnd();
+            glColor3f(0.6, 0.6, 0.6);
+            glBegin(GL_QUADS);//Handle
+                glVertex3f(x+w*.85, y+h*.55, depth);
+                glVertex3f(x+w*.85, y+h*.45, depth);
+                glVertex3f(x+w*.65, y+h*.45, depth);
+                glVertex3f(x+w*.65, y+h*.55, depth);
+            glEnd();
+        }
+        else{
+            glBegin(GL_QUADS);//Opened Door
+            glVertex3f(x-w/5, y+h/10, depth);
+            glVertex3f(x-w/5, y+h*9/10, depth);
+            glVertex3f(x+w/10, y+h*9/10, depth);
+            glVertex3f(x+w/10, y+h/10, depth);
+            glEnd();
+
+            glColor3f(0.3, 0.3, 0.3);
+            glBegin(GL_QUADS);//Inner Box
+            glVertex3f(x+w*9/10, y+h/10, depth);
+            glVertex3f(x+w*9/10, y+h*9/10, depth);
+            glVertex3f(x+w/10, y+h*9/10, depth);
+            glVertex3f(x+w/10, y+h/10, depth);
+            glEnd();
+        }
+    }
+
+    virtual bool inside(float x1, float y1){
+        if (x1>=x && x1<=x+w && y1>=y && y1<=y+h){
+            return true;
+        }
+        return false;
+    }
+
+    virtual int press()=0;
+
+    bool isOpened(){
+        return opened;
+    }
+};
+
+class KeyBox : public LockedBox{
+    bool keySelected;
+
+public:
+    KeyBox(float x1, float y1, float w1, float h1){
+        x = x1;
+        y = y1;
+        w = w1;
+        h = h1;
+        opened = false;
+    }
+
+    int press(){
+        pressed = true;
+        if(keySelected){
+            opened = true;
+            return 3;
+        }
+        return 0;
+    }
+
+    void selectKey(){
+        keySelected = true;
+    }
+
+    void unselectKey(){
+        keySelected = false;
+    }
+
+};
 
 #endif // OBJECTS_H

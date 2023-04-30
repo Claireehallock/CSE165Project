@@ -40,7 +40,7 @@ protected:
 
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
-//    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
 
 public slots:
     void UpdateAnimation();
@@ -64,8 +64,13 @@ private:
 
     bool mousePressed;
 
-    enum command{Nothing=0, Books=1, Temp=2};
+    enum command{Nothing=0, Books=1, temp=2};
     command executeCommand;
+
+    bool hasCheese;
+
+    bool mouseGone;
+    void giveKey();
 
 };
 

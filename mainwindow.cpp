@@ -18,13 +18,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     openGLFunctions = context->functions();
 
+    selected = NULL;
+
     executeCommand = Nothing;
+    hasCheese = false;
+    mouseGone = false;
 
     timer = new QTimer(this);
 
     connect(timer, SIGNAL(timeout()), this, SLOT(UpdateAnimation()));
 
-    timer->start();
+    timer->start(1);
 
 }
 
@@ -42,9 +46,23 @@ void MainWindow::click(float x, float y)
     int i = 0;
     bool check = false;
     while(!check && i < c.size()){
-        if (c.at(i)->inside(x, y)){
+        if (c.at(i)->inside(x, y)&&c.at(i)!=selected){
             executeCommand = command(c.at(i)->press());
-            selected = c.at(i);
+            if(selected){//deselect current object
+                if(selected->Movable()){
+                    dynamic_cast<MovableObject*>(selected)->drop();
+                }
+                unclick();
+            }
+            selected = c.at(i);//Set new selected
+            if(selected->Movable()){
+                if(dynamic_cast<MovableObject*>(selected)->isCheese()){
+                    dynamic_cast<Mouse*>(d[9])->selectCheese();
+                }
+                if(dynamic_cast<MovableObject*>(selected)->isKey()){
+                    dynamic_cast<KeyBox*>(d[12])->selectKey();
+                }
+            }
             UpdateAnimation();
             check = true;
         }
@@ -55,6 +73,14 @@ void MainWindow::click(float x, float y)
 void MainWindow::unclick()
 {
     if(selected){
+        if(selected->Movable()){
+            if(dynamic_cast<MovableObject*>(selected)->isCheese()){
+                dynamic_cast<Mouse*>(d[9])->unselectCheese();
+            }
+            if(dynamic_cast<MovableObject*>(selected)->isKey()){
+                dynamic_cast<KeyBox*>(d[12])->unselectKey();
+            }
+        }
         selected->release();
         selected = NULL;
     }
@@ -121,14 +147,36 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         float y = (0-(float)event->pos().y()-hExtraPixels/2)/windowSize*2+1;
         click(x, y);
     }
+
+    if (event->button() == Qt::RightButton) {
+        if(selected && selected->Movable()){
+            dynamic_cast<MovableObject*>(selected)->drop();
+            unclick();
+        }
+    }
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
-        mousePressed = false;
-        unclick();
+        if(selected && !selected->Movable()){
+            mousePressed = false;
+            unclick();
+        }
     }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    if(selected && selected->Movable()){
+        float x = ((float)event->pos().x()-wExtraPixels/2)/windowSize*2-1;
+        float y = (0-(float)event->pos().y()-hExtraPixels/2)/windowSize*2+1;
+        dynamic_cast<MovableObject*>(selected)->setPosition(x, y);
+    }
+}
+
+void MainWindow::giveKey(){
+    c[9]->show();
 }
 
 
@@ -157,24 +205,55 @@ void MainWindow::UpdateAnimation()//Used to check for any updates
                 dynamic_cast<Book*>(c[i])->setSelected(0);
             }
             break;
-        case 2:
-            break;
+
+        case 2://Mouse Cheese
+            hasCheese = true;
+        break;
+
+        case 3://Key Box
+            c[9]->hide();
+        break;
+
         case 101: //button 1 (TV Button)
             d[8]->toggleShow();
             break;
         }
         executeCommand = Nothing;
     }
-    if(time < INT_MAX){
+    if(time < 100){
         time++;
     }
     else{
         time = 0;
     }
-    if (time%60 == 0){
+    if (time%6 == 0){
         dynamic_cast<Mouse*>(c[7])->move();
     }
+
+    if(hasCheese){
+        Mouse* m = dynamic_cast<Mouse*>(c[7]);
+        int p = (int)m->getPosition();
+        if(p == 0){//Mouse inside hole
+            if(!mouseGone){
+                c[8]->hide();
+                if(m->getWaitTime()==100){
+                    giveKey();
+                    mouseGone = true;
+                }
+            }
+        }
+        else if(p == 1){//Left
+            dynamic_cast<MovableObject*>(c[8])->setPosition(m->getX()-0.07, m->getY()+0.05);
+        }
+        else if(p == 2){//upLeft
+            dynamic_cast<MovableObject*>(c[8])->setPosition(m->getX()+0.05, m->getY()+0.07);
+        }
+
+    }
+
     this->update();
 }
+
+
 
 

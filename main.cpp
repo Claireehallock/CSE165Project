@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w;
 
-    //Add "Background" (1 Non Clickable Object) d[0]
+    //Add "Background" (1 Nonclickable Object) d[0]
     Background* B = new Background();
     w.addObject(B);
 
@@ -40,6 +40,19 @@ int main(int argc, char *argv[])
     //Add mouse (1 Clickable Object) d[9] c[7]
     Mouse* mouse = new Mouse();//mouse
     w.addObject(mouse);
+
+    //Add cheese (1 Clickable Object) d[10] c[8]
+    Cheese* cheese = new Cheese(-0.55, 0, 0.1, 0.1);//cheese
+    w.addObject(cheese);
+
+    //Add key (1 Clickable Object) d[11] c[9]
+    Key* key = new Key(-0.15, -0.65);//key
+    w.addObject(key);
+
+    //Add KeyBox (1 Clickable Object) d[12] c[10]
+    KeyBox* box1 = new KeyBox(-0.7, 0.2, 0.3, 0.25);//key
+    w.addObject(box1);
+
 
     w.setTitle("CSE165Project");
     w.resize(640, 640);
