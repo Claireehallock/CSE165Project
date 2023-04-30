@@ -51,6 +51,8 @@ private:
 
     QTimer* timer;
 
+    long int time;
+
     std::vector<DrawableObject*> d;
     std::vector<ClickableObject*> c;
 

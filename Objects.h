@@ -47,7 +47,6 @@ public:
     }
 
     virtual void toggleShow(){
-        std::cout << "hi\n";
         if (shown){
             shown = false;
         }
@@ -69,7 +68,7 @@ public:
         pressed = false;
     };
 
-    virtual bool inside(float x, float y) = 0;
+    virtual bool inside(float x1, float y1) = 0;
 
     virtual bool Clickable(){
         return true;
@@ -193,6 +192,33 @@ public:
             glVertex3f(0.05, 0.35, depth);
             glVertex3f(0.75, 0.35, depth);
             glVertex3f(0.75, -0.025, depth);
+        glEnd();
+
+        //Mouse holes
+        glBegin(GL_QUADS);//Mouse hole 1
+            glVertex3f(-0.18, -0.6, depth);
+            glVertex3f(-0.18, -0.55, depth);
+            glVertex3f(-0.12, -0.55, depth);
+            glVertex3f(-0.12, -0.6, depth);
+        glEnd();
+        glBegin(GL_QUADS);
+            glVertex3f(-0.18, -0.55, depth);
+            glVertex3f(-0.17, -0.52, depth);
+            glVertex3f(-0.13, -0.52, depth);
+            glVertex3f(-0.12, -0.55, depth);
+        glEnd();
+
+        glBegin(GL_QUADS);//Mouse hole 2
+            glVertex3f(-0.83, 0.8, depth);
+            glVertex3f(-0.83, 0.85, depth);
+            glVertex3f(-0.77, 0.85, depth);
+            glVertex3f(-0.77, 0.8, depth);
+        glEnd();
+        glBegin(GL_QUADS);
+            glVertex3f(-0.83, 0.85, depth);
+            glVertex3f(-0.82, 0.88, depth);
+            glVertex3f(-0.78, 0.88, depth);
+            glVertex3f(-0.77, 0.85, depth);
         glEnd();
     }
 };
@@ -462,5 +488,150 @@ public:
         }
     }
 };
+
+class Mouse : public ClickableObject{//I decided to hardcode the start and end location of the mouse sinceI only plan on using 1
+    enum Pos{None=0, Left = 1, upLeft = 2};
+    Pos pos;
+
+    float x;
+    float y;
+
+    bool stopped;
+
+    int waitTime;
+
+public:
+    Mouse(){
+        x = -0.2;
+        y = -0.58;
+        pos = upLeft;
+        stopped = false;
+        waitTime = 201;
+    }
+
+    void paint(){
+        switch((int)pos){
+        case 0:
+            break;
+        case 1://Left
+            glColor3f(0.8, 0.8, 0.8);
+            glBegin(GL_TRIANGLES);//Head
+                glVertex3f(x, y, depth);
+                glVertex3f(x-0.025, y+0.025, depth);
+                glVertex3f(x, y+0.05, depth);
+            glEnd();
+            glBegin(GL_QUADS);//Body
+                glVertex3f(x, y, depth);
+                glVertex3f(x+0.075, y, depth);
+                glVertex3f(x+0.075, y+0.05, depth);
+                glVertex3f(x, y+0.05, depth);
+            glEnd();
+            glColor3f(1, 0.8, 1);
+            glBegin(GL_TRIANGLES);//Tail
+                glVertex3f(x+0.07, y+0.05, depth);
+                glVertex3f(x+0.075, y+0.035, depth);
+                glVertex3f(x+0.13, y+0.065, depth);
+            glEnd();
+            glBegin(GL_QUADS);//Ear
+                glVertex3f(x+0.005, y+0.05, depth);
+                glVertex3f(x+0.02, y+0.075, depth);
+                glVertex3f(x+0.0325, y+0.07, depth);
+                glVertex3f(x+0.03, y+0.05, depth);
+            glEnd();
+            glBegin(GL_TRIANGLES);//Nose
+                glVertex3f(x-0.015, y+0.015, depth);
+                glVertex3f(x-0.025, y+0.025, depth);
+                glVertex3f(x-0.015, y+0.035, depth);
+            glEnd();
+            glColor3f(0.0f, 0.0f, 0.0f);
+            glBegin(GL_QUADS);//Eye
+                glVertex3f(x+0.00, y+0.035, depth);
+                glVertex3f(x+0.005, y+0.04, depth);
+                glVertex3f(x+0.01, y+0.035, depth);
+                glVertex3f(x+0.005, y+0.03, depth);
+            glEnd();
+                break;
+        case 2://upLeft
+            glColor3f(0.8, 0.8, 0.8);
+            glBegin(GL_TRIANGLES);//Head
+                glVertex3f(x, y, depth);
+                glVertex3f(x+0.025, y+0.025, depth);
+                glVertex3f(x+0.05, y, depth);
+            glEnd();
+            glBegin(GL_QUADS);//Body
+                glVertex3f(x, y, depth);
+                glVertex3f(x, y-0.075, depth);
+                glVertex3f(x+0.05, y-0.075, depth);
+                glVertex3f(x+0.05, y, depth);
+            glEnd();
+            glColor3f(1, 0.8, 1);
+            glBegin(GL_TRIANGLES);//Tail
+                glVertex3f(x+0.05, y-0.07, depth);
+                glVertex3f(x+0.035, y-0.075, depth);
+                glVertex3f(x+0.065, y-0.13, depth);
+            glEnd();
+            glBegin(GL_QUADS);//Ear
+                glVertex3f(x+0.05, y-0.005, depth);
+                glVertex3f(x+0.075, y-0.02, depth);
+                glVertex3f(x+0.07, y-0.0325, depth);
+                glVertex3f(x+0.05, y-0.03, depth);
+            glEnd();
+            glBegin(GL_TRIANGLES);//Nose
+                glVertex3f(x+0.015, y+0.015, depth);
+                glVertex3f(x+0.025, y+0.025, depth);
+                glVertex3f(x+0.035, y+0.015, depth);
+            glEnd();
+            glColor3f(0.0f, 0.0f, 0.0f);
+            glBegin(GL_QUADS);//Eye
+                glVertex3f(x+0.035, y, depth);
+                glVertex3f(x+0.04, y-0.005, depth);
+                glVertex3f(x+0.035, y-0.01, depth);
+                glVertex3f(x+0.03, y-0.005, depth);
+            glEnd();
+                break;
+        }
+    }
+
+    void stop(){
+        stopped = true;
+    }
+
+    void move(){
+        if(pos == upLeft){
+            y+=0.001;
+        }
+        if(pos == Left){
+            x-=0.001;
+        }
+        if(y >=0.8){
+            pos = Left;
+        }
+        if(x <=-0.8){
+            pos = None;
+            x = -0.2;
+            y = -0.5;
+            waitTime = 0;
+        }
+        if(waitTime < 200){
+            waitTime++;
+        }
+        else if (waitTime == 200){
+            pos = upLeft;
+            waitTime = 201;
+        }
+    }
+
+    bool inside(float x1, float y1){
+        if(!stopped){
+            return false;
+        }
+        else{
+            //
+        }
+        return false;
+    }
+
+};
+
 
 #endif // OBJECTS_H

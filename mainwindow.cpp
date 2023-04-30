@@ -30,8 +30,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-//    delete timer;
-//    delete context;
+    delete timer;
+    delete context;
+    for(int i = 0; i < d.size(); i++){
+        delete d.at(i);
+    }
 }
 
 void MainWindow::click(float x, float y)
@@ -161,6 +164,15 @@ void MainWindow::UpdateAnimation()//Used to check for any updates
             break;
         }
         executeCommand = Nothing;
+    }
+    if(time < INT_MAX){
+        time++;
+    }
+    else{
+        time = 0;
+    }
+    if (time%60 == 0){
+        dynamic_cast<Mouse*>(c[7])->move();
     }
     this->update();
 }

@@ -37,6 +37,10 @@ int main(int argc, char *argv[])
     Screen* screen = new Screen();//TV screen
     w.addObject(screen);
 
+    //Add mouse (1 Clickable Object) d[9] c[7]
+    Mouse* mouse = new Mouse();//mouse
+    w.addObject(mouse);
+
     w.setTitle("CSE165Project");
     w.resize(640, 640);
     w.show();
