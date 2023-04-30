@@ -64,13 +64,17 @@ private:
 
     bool mousePressed;
 
-    enum command{Nothing=0, Books=1, temp=2};
+    enum command{Nothing=0, Books=1, temp=2, Dials = 4};
     command executeCommand;
 
     bool hasCheese;
 
     bool mouseGone;
     void giveKey();
+
+    bool redShown=false;
+    bool greenShown=false;
+    bool winnable=false;
 
 };
 

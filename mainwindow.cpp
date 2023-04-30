@@ -60,7 +60,7 @@ void MainWindow::click(float x, float y)
                     dynamic_cast<Mouse*>(d[9])->selectCheese();
                 }
                 if(dynamic_cast<MovableObject*>(selected)->isKey()){
-                    dynamic_cast<KeyBox*>(d[11])->selectKey();
+                    dynamic_cast<KeyBox*>(d[10])->selectKey();
                 }
             }
             UpdateAnimation();
@@ -78,7 +78,7 @@ void MainWindow::unclick()
                 dynamic_cast<Mouse*>(d[9])->unselectCheese();
             }
             if(dynamic_cast<MovableObject*>(selected)->isKey()){
-                dynamic_cast<KeyBox*>(d[11])->unselectKey();
+                dynamic_cast<KeyBox*>(d[10])->unselectKey();
             }
         }
         selected->release();
@@ -176,15 +176,16 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 }
 
 void MainWindow::giveKey(){
-    c[10]->show();
+    c[11]->show();
 }
-
 
 //Note:
 //c[0]->c[5] are books
 void MainWindow::UpdateAnimation()//Used to check for any updates
 {
-    if(executeCommand != Nothing){
+    bool check = true;
+    while(check && executeCommand != Nothing){
+        check = false;
         switch((int)executeCommand){
         case 1://Books
             //Checks for correct order of selected books
@@ -197,31 +198,56 @@ void MainWindow::UpdateAnimation()//Used to check for any updates
             {
                 //What to do if correct order selected
                 dynamic_cast<Book*>(c[0])->numSelected = -1;
+                dynamic_cast<BookBox*>(d[11])->open();
+                d[13]->show();
+                redShown = true;
+                if(greenShown){
+                    winnable = true;
+                    check = true;
+                    executeCommand = Dials;
+                }
             }
             else{
-                //
+                //If correct order is not selected
             }
             for(int i = 0; i < 6; i++){
                 dynamic_cast<Book*>(c[i])->setSelected(0);
             }
-            dynamic_cast<BookBox*>(d[13])->open();
-            d[15]->show();
-            break;
+        break;
 
         case 2://Mouse Cheese
             hasCheese = true;
         break;
 
         case 3://Key Box
-            c[10]->hide();
-            d[14]->show();
+            c[11]->hide();
+            d[12]->show();
+            greenShown = true;
+            if(redShown){
+                winnable = true;
+                check = true;
+                executeCommand = Dials;
+            }
         break;
 
+        case 4://Dials
+        std::cout << "test";
+            if(winnable){
+                std::cout << "winnable";
+                if(dynamic_cast<CodeInput*>(d[17])->getNum() == 9 &&
+                   dynamic_cast<CodeInput*>(d[18])->getNum() == 12 &&
+                    dynamic_cast<CodeInput*>(d[19])->getNum() == 3){
+                    d[20]->show();
+                }
+            }
+        break;
         case 101: //button 1 (TV Button)
             d[8]->toggleShow();
             break;
         }
-        executeCommand = Nothing;
+        if(!check){
+            executeCommand = Nothing;
+        }
     }
     if(time < 100){
         time++;
@@ -238,7 +264,7 @@ void MainWindow::UpdateAnimation()//Used to check for any updates
         int p = (int)m->getPosition();
         if(p == 0){//Mouse inside hole
             if(!mouseGone){
-                c[8]->hide();
+                c[10]->hide();
                 if(m->getWaitTime()==100){
                     giveKey();
                     mouseGone = true;
@@ -246,10 +272,10 @@ void MainWindow::UpdateAnimation()//Used to check for any updates
             }
         }
         else if(p == 1){//Left
-            dynamic_cast<MovableObject*>(c[8])->setPosition(m->getX()-0.07, m->getY()+0.05);
+            dynamic_cast<MovableObject*>(c[10])->setPosition(m->getX()-0.07, m->getY()+0.05);
         }
         else if(p == 2){//upLeft
-            dynamic_cast<MovableObject*>(c[8])->setPosition(m->getX()+0.05, m->getY()+0.07);
+            dynamic_cast<MovableObject*>(c[10])->setPosition(m->getX()+0.05, m->getY()+0.07);
         }
 
     }

@@ -188,6 +188,14 @@ public:
             glVertex3f(-0.85, -0.7, depth);
         glEnd();
 
+        glColor3f(0.5f, 0.5f, 0.5f);
+        glBegin(GL_QUADS);//Final Box
+            glVertex3f(-0.75, -0.5, depth);
+            glVertex3f(-0.35, -0.5, depth);
+            glVertex3f(-0.35, -0.7, depth);
+            glVertex3f(-0.75, -0.7, depth);
+         glEnd();
+
         //Plate for cheese
         glColor3f(1, 1, 1);
         glBegin(GL_QUADS);
@@ -1095,7 +1103,7 @@ public:
                 glVertex3f(x-0.866*radius*0.5, y-0.005, depth);
                 glEnd();
                 break;
-            case 12:
+            case 0:
                 glBegin(GL_QUADS);
                 glVertex3f(x-0.005, y, depth);
                 glVertex3f(x+0.005, y, depth);
@@ -1104,6 +1112,133 @@ public:
                 glEnd();
                 break;
             }
+        }
+    }
+};
+
+class CodeInput : public ClickableObject{
+protected:
+    int num;
+
+    float x;
+    float y;
+
+    float radius;
+
+    static int id;
+    int thisId;
+
+public:
+    CodeInput(float x1, float y1){
+        x = x1;
+        y = y1;
+        num=0;
+        radius = 0.1;
+        thisId = id;
+        id++;
+    }
+
+    void paint(){
+
+        glColor3f(0.4, 0.6, 0.6);
+        glBegin(GL_QUADS);
+        glVertex3f(x, y-radius*0.5, depth);
+        glVertex3f(x-radius*0.5, y, depth);
+        glVertex3f(x, y+radius*0.5, depth);
+        glVertex3f(x+radius*0.5, y, depth);
+        glEnd();
+
+
+        switch(thisId){
+        case 0:
+        glColor3f(1, 0, 0);
+        break;
+
+        case 1:
+        glColor3f(0, 1, 0);
+        break;
+
+        case 2:
+        glColor3f(0, 0, 1);
+        break;
+        }
+
+        switch(num){
+        case 3:
+            glBegin(GL_QUADS);
+            glVertex3f(x, y-0.005, depth);
+            glVertex3f(x, y+0.005, depth);
+            glVertex3f(x+radius*0.5, y+0.005, depth);
+            glVertex3f(x+radius*0.5, y-0.005, depth);
+            glEnd();
+            break;
+        case 6:
+            glBegin(GL_QUADS);
+            glVertex3f(x-0.005, y, depth);
+            glVertex3f(x+0.005, y, depth);
+            glVertex3f(x+0.005, y-radius*0.5, depth);
+            glVertex3f(x-0.005, y-radius*0.5, depth);
+            glEnd();
+            break;
+        case 9:
+            glBegin(GL_QUADS);
+            glVertex3f(x, y-0.005, depth);
+            glVertex3f(x, y+0.005, depth);
+            glVertex3f(x-radius*0.5, y+0.005, depth);
+            glVertex3f(x-radius*0.5, y-0.005, depth);
+            glEnd();
+            break;
+        case 0:
+            glBegin(GL_QUADS);
+            glVertex3f(x-0.005, y, depth);
+            glVertex3f(x+0.005, y, depth);
+            glVertex3f(x+0.005, y+radius*0.5, depth);
+            glVertex3f(x-0.005, y+radius*0.5, depth);
+            glEnd();
+            break;
+        }
+    }
+
+    int press(){
+        numInc();
+        return 4;
+    }
+
+
+    void numInc(){
+        num +=3;
+        if (num >= 12)
+            num = 0;
+    }
+
+    int getNum(){
+        return num;
+    }
+
+    bool inside(float x1, float y1){
+        if(x1>=x-radius*0.5&&x1<=x+radius*0.5&&y1>=y-radius*0.5&&y1<=y+radius*0.5){
+            return true;
+        }
+        return false;
+    }
+
+};
+
+class WinScreen : public DrawableObject{
+public:
+    WinScreen(){
+        depth = 0.99;
+    }
+
+    void paint(){
+        if(shown){
+            glColor3f(0.5, 1, 1);
+            glBegin(GL_QUADS);
+                glVertex3f(-1, -1, depth);
+                glVertex3f(-1, 1, depth);
+                glVertex3f(1, 1, depth);
+                glVertex3f(1, -1, depth);
+            glEnd();
         }
     }
 };

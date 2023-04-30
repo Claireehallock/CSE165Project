@@ -5,6 +5,7 @@
 
 int Book::numSelected = 0;
 int Button::numButtons = 0;
+int CodeInput::id = 0;
 
 int main(int argc, char *argv[])
 {
@@ -41,23 +42,15 @@ int main(int argc, char *argv[])
     Mouse* mouse = new Mouse();//mouse
     w.addObject(mouse);
 
-    //Add cheese (1 Clickable Object) d[10] c[8]
-    Cheese* cheese = new Cheese(-0.55, 0, 0.1, 0.1);//cheese
-    w.addObject(cheese);
-
-    //Add KeyBox (1 Clickable Object) d[11] c[9]
+    //Add KeyBox (1 Clickable Object) d[10] c[8]
     KeyBox* box1 = new KeyBox(-0.7, 0.2, 0.35, 0.25);//keyBox
     w.addObject(box1);
 
-    //Add key (1 Clickable Object) d[12] c[10]
-    Key* key = new Key(-0.15, -0.65);//key
-    w.addObject(key);
-
-    //Add BookBox (1 Clickable Object) d[13] c[11]
+    //Add BookBox (1 Clickable Object) d[11] c[9]
     BookBox* box2 = new BookBox(-0.7, -0.4, 0.2, 0.2);//bookBox
     w.addObject(box2);
 
-    //Add Clocks (3 Drawable Object) d[14]
+    //Add Clocks (3 Drawable Object) d[12]
     Clock* clock1 = new Clock(-0.525, 0.325, 0.1, 9, 1, 0, 0);//Red clock
     clock1->hide();
     w.addObject(clock1);
@@ -67,6 +60,26 @@ int main(int argc, char *argv[])
     Clock* clock3 = new Clock(0.55, 0.7, 0.15, 3, 0, 0, 1);//Blue clock
     w.addObject(clock3);
 
+    //Add cheese (1 Clickable Object) d[15] c[10]
+    Cheese* cheese = new Cheese(-0.55, 0, 0.1, 0.1);//cheese
+    w.addObject(cheese);
+
+    //Add key (1 Clickable Object) d[16] c[11]
+    Key* key = new Key(-0.15, -0.65);//key
+    w.addObject(key);
+
+    //Add CodeInputs (1 Clickable Object) d[17] c[12]
+    CodeInput* i1 = new CodeInput(-0.65, -0.6);//CodeInput1
+    w.addObject(i1);
+    CodeInput* i2 = new CodeInput(-0.55, -0.6);//CodeInput2
+    w.addObject(i2);
+    CodeInput* i3 = new CodeInput(-0.45, -0.6);//CodeInput3
+    w.addObject(i3);
+
+    //Add Winscreen (1 Nonclickable Object) d[20]
+    WinScreen* wscreen = new WinScreen();//winscreen
+    w.addObject(wscreen);
+    wscreen->hide();
 
     w.setTitle("CSE165Project");
     w.resize(640, 640);
