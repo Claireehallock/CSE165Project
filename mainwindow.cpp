@@ -204,6 +204,7 @@ void MainWindow::UpdateAnimation()//Used to check for any updates
             for(int i = 0; i < 6; i++){
                 dynamic_cast<Book*>(c[i])->setSelected(0);
             }
+            dynamic_cast<BookBox*>(d[13])->open();
             break;
 
         case 2://Mouse Cheese

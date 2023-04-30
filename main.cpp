@@ -50,8 +50,12 @@ int main(int argc, char *argv[])
     w.addObject(key);
 
     //Add KeyBox (1 Clickable Object) d[12] c[10]
-    KeyBox* box1 = new KeyBox(-0.7, 0.2, 0.3, 0.25);//key
+    KeyBox* box1 = new KeyBox(-0.7, 0.2, 0.35, 0.25);//key
     w.addObject(box1);
+
+    //Add BookBox (1 Clickable Object) d[13] c[11]
+    BookBox* box2 = new BookBox(-0.7, -0.4, 0.2, 0.2);//key
+    w.addObject(box2);
 
 
     w.setTitle("CSE165Project");

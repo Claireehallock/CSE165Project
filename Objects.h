@@ -961,4 +961,23 @@ public:
 
 };
 
+class BookBox : public LockedBox{
+public:
+    BookBox(float x1, float y1, float w1, float h1){
+        x = x1;
+        y = y1;
+        w = w1;
+        h = h1;
+        opened = false;
+    }
+
+    void open(){
+        opened = true;
+    }
+
+    int press(){
+        return 0;
+    }
+};
+
 #endif // OBJECTS_H
