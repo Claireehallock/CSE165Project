@@ -1239,6 +1239,25 @@ public:
                 glVertex3f(1, 1, depth);
                 glVertex3f(1, -1, depth);
             glEnd();
+            glColor3f(1, 0.9, 0.3);
+            glBegin(GL_QUADS);//Trophy Cup
+                glVertex3f(-0.3, 0.4, depth);
+                glVertex3f(0.3, 0.4, depth);
+                glVertex3f(0.2, 0, depth);
+                glVertex3f(-0.2, 0, depth);
+            glEnd();
+            glBegin(GL_QUADS);//Trophy Stem
+                glVertex3f(-0.05, -0.3, depth);
+                glVertex3f(0.05, -0.3, depth);
+                glVertex3f(0.05, 0, depth);
+                glVertex3f(-0.05, 0, depth);
+            glEnd();
+            glBegin(GL_QUADS);//Trophy Base
+                glVertex3f(-0.15, -0.3, depth);
+                glVertex3f(0.15, -0.3, depth);
+                glVertex3f(0.2, -0.4, depth);
+                glVertex3f(-0.2, -0.4, depth);
+            glEnd();
         }
     }
 };

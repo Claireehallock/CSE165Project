@@ -183,9 +183,7 @@ void MainWindow::giveKey(){
 //c[0]->c[5] are books
 void MainWindow::UpdateAnimation()//Used to check for any updates
 {
-    bool check = true;
-    while(check && executeCommand != Nothing){
-        check = false;
+    while(executeCommand != Nothing){
         switch((int)executeCommand){
         case 1://Books
             //Checks for correct order of selected books
@@ -200,11 +198,9 @@ void MainWindow::UpdateAnimation()//Used to check for any updates
                 dynamic_cast<Book*>(c[0])->numSelected = -1;
                 dynamic_cast<BookBox*>(d[11])->open();
                 d[13]->show();
-                redShown = true;
-                if(greenShown){
+                greenShown = true;
+                if(redShown){
                     winnable = true;
-                    check = true;
-                    executeCommand = Dials;
                 }
             }
             else{
@@ -222,20 +218,16 @@ void MainWindow::UpdateAnimation()//Used to check for any updates
         case 3://Key Box
             c[11]->hide();
             d[12]->show();
-            greenShown = true;
-            if(redShown){
+            redShown = true;
+            if(greenShown){
                 winnable = true;
-                check = true;
-                executeCommand = Dials;
             }
         break;
 
         case 4://Dials
-        std::cout << "test";
             if(winnable){
-                std::cout << "winnable";
                 if(dynamic_cast<CodeInput*>(d[17])->getNum() == 9 &&
-                   dynamic_cast<CodeInput*>(d[18])->getNum() == 12 &&
+                   dynamic_cast<CodeInput*>(d[18])->getNum() == 0 &&
                     dynamic_cast<CodeInput*>(d[19])->getNum() == 3){
                     d[20]->show();
                 }
@@ -245,9 +237,7 @@ void MainWindow::UpdateAnimation()//Used to check for any updates
             d[8]->toggleShow();
             break;
         }
-        if(!check){
-            executeCommand = Nothing;
-        }
+        executeCommand = Nothing;
     }
     if(time < 100){
         time++;
